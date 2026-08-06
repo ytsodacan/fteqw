@@ -21,9 +21,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Ensure build dependencies (git, zip, unzip, wget)
+        run: |
+          set -eu
+          missing=""
+          for bin in git zip unzip wget; do
+            command -v "$bin" >/dev/null 2>&1 || missing="$missing $bin"
+          done
+          if [ -n "$missing" ]; then
+            echo "Container image is missing:$missing -- attempting to install via apt-get"
+            if command -v apt-get >/dev/null 2>&1; then
+              apt-get update -qq
+              apt-get install -y -qq --no-install-recommends $missing
+            else
+              echo "No apt-get available in this container; build-nzp-web-package.sh will fall back to the official menu.dat if git is missing" >&2
+            fi
+          fi
+          # Clones inside build-nzp-web-package.sh happen as whatever user this
+          # container runs as, into a fresh tmp dir it owns, but set this anyway
+          # in case the runner's git config is picky about the checked-out repo.
+          git config --global --add safe.directory '*'
+
       - name: Build WebGL/WASM binaries
         run: |
           cd tools/
+          chmod +x build-nzp-web-package.sh build-nzp-web.sh || true
           sh build-nzp-web-package.sh
 
       - name: Upload WebGL package artifacts
