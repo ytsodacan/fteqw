@@ -17,6 +17,6 @@ rm -rf engine/release
 ./build-nzp-linux_arm64.sh
 zip -j ../tmp/pc-nzp-linux_arm64.zip ../engine/release/nzportablearm64
 rm -rf engine/release
-./build-nzp-web.sh
-zip -j ../tmp/pc-nzp-web.zip ../engine/release/ftewebgl.wasm ../engine/release/ftewebgl.js
+./build-nzp-web-package.sh
+(cd ../engine/release/web && zip -q -r ../../../tmp/pc-nzp-web.zip .)
 rm -rf engine/release

@@ -24,16 +24,21 @@ jobs:
       - name: Build WebGL/WASM binaries
         run: |
           cd tools/
-          sh build-nzp-web.sh
+          sh build-nzp-web-package.sh
 
-      - name: Upload WebGL artifacts
+      - name: Upload WebGL package artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ftewebgl
+          name: ftewebgl-web-package
           path: |
-            ./engine/release/ftewebgl.html
-            ./engine/release/ftewebgl.js
-            ./engine/release/ftewebgl.wasm
-            ./engine/release/ftewebgl.html.gz
-            ./engine/release/ftewebgl.js.gz
-            ./engine/release/ftewebgl.wasm.gz
+            ./engine/release/web/index.html
+            ./engine/release/web/ftewebgl.html
+            ./engine/release/web/ftewebgl.js
+            ./engine/release/web/ftewebgl.wasm
+            ./engine/release/web/ftewebgl.html.gz
+            ./engine/release/web/ftewebgl.js.gz
+            ./engine/release/web/ftewebgl.wasm.gz
+            ./engine/release/web/default.fmf
+            ./engine/release/web/nzportable.ico
+            ./engine/release/web/nzp/game.pk3
+            ./engine/release/web/nzp/progs.pk3
