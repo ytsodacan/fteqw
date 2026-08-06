@@ -1,0 +1,39 @@
+name: Build WASM/WebGL
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-wasm:
+    runs-on: ubuntu-latest
+    container:
+      image: motolegacy/fteqw:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build WebGL/WASM binaries
+        run: |
+          cd tools/
+          sh build-nzp-web.sh
+
+      - name: Upload WebGL artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ftewebgl
+          path: |
+            ./engine/release/ftewebgl.html
+            ./engine/release/ftewebgl.js
+            ./engine/release/ftewebgl.wasm
+            ./engine/release/ftewebgl.html.gz
+            ./engine/release/ftewebgl.js.gz
+            ./engine/release/ftewebgl.wasm.gz

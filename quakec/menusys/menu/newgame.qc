@@ -393,6 +393,7 @@ nonstatic void(mitem_desktop desktop) M_NewGame =
 		m.addm(banner, [(160-banner.item_size_x)*0.5, pos-32], [(160+banner.item_size_x)*0.5, pos-8]);
 		m.addm(spawn(mitem_text, item_text:"Single Player", item_command:"m_pop;m_newgame sp", item_scale:16, item_flags:IF_CENTERALIGN), [0, pos], [160, pos+16]);	pos += 16;
 		m.addm(spawn(mitem_text, item_text:"Cooperative", item_command:"m_pop;m_newgame coop", item_scale:16, item_flags:IF_CENTERALIGN), [0, pos], [160, pos+16]);	pos += 16;
+		m.addm(spawn(mitem_text, item_text:"Join Silly Server", item_command:"m_pop;connect \"wss://cod.sillyprootsoda.com\"", item_scale:16, item_flags:IF_CENTERALIGN), [0, pos], [160, pos+16]);	pos += 16;
 		m.addm(spawn(mitem_text, item_text:"Deathmatch", item_command:"m_pop;m_newgame dm", item_scale:16, item_flags:IF_CENTERALIGN), [0, pos], [160, pos+16]);	pos += 16;
 		m.addm(spawn(mitem_text, item_text:"Team Deathmatch", item_command:"m_pop;m_newgame tdm", item_scale:16, item_flags:IF_CENTERALIGN), [0, pos], [160, pos+16]);	pos += 16;
 
