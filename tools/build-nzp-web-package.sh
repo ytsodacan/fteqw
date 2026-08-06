@@ -17,12 +17,25 @@ mkdir -p "$TMP_DIR" "$PACKAGE_DIR/nzp"
 
 cp "$RELEASE_DIR/ftewebgl.js" "$PACKAGE_DIR/ftewebgl.js"
 cp "$RELEASE_DIR/ftewebgl.wasm" "$PACKAGE_DIR/ftewebgl.wasm"
-cp "$RELEASE_DIR/ftewebgl.html" "$PACKAGE_DIR/ftewebgl.html"
 cp "$ENGINE_DIR/web/nzp-index.html" "$PACKAGE_DIR/index.html"
 cp "$ENGINE_DIR/web/nzp-default.fmf" "$PACKAGE_DIR/default.fmf"
 cp "$ENGINE_DIR/client/nzportable.ico" "$PACKAGE_DIR/nzportable.ico"
 
-for gz_file in ftewebgl.js.gz ftewebgl.wasm.gz ftewebgl.html.gz; do
+# The engine build always emits a generic, unbranded ftewebgl.html (fteshell.html)
+# with no NZ:P game/progs files preloaded, so it boots into the plain vanilla Quake
+# menu instead of NZ:P. Anyone hitting that URL out of habit sees the "old UI".
+# Replace it with a redirect to the real NZ:P-themed index.html so that trap can't happen.
+cat > "$PACKAGE_DIR/ftewebgl.html" <<'EOF'
+<!doctype html>
+<html lang="en-us"><head><meta charset="utf-8">
+<meta http-equiv="refresh" content="0; url=index.html">
+<title>NZ: Portable</title>
+</head><body>
+<p>Redirecting to <a href="index.html">index.html</a>&hellip;</p>
+</body></html>
+EOF
+
+for gz_file in ftewebgl.js.gz ftewebgl.wasm.gz; do
 	if [ -f "$RELEASE_DIR/$gz_file" ]; then
 		cp "$RELEASE_DIR/$gz_file" "$PACKAGE_DIR/$gz_file"
 	fi

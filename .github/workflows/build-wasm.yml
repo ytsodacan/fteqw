@@ -35,10 +35,34 @@ jobs:
             ./engine/release/web/ftewebgl.html
             ./engine/release/web/ftewebgl.js
             ./engine/release/web/ftewebgl.wasm
-            ./engine/release/web/ftewebgl.html.gz
             ./engine/release/web/ftewebgl.js.gz
             ./engine/release/web/ftewebgl.wasm.gz
             ./engine/release/web/default.fmf
             ./engine/release/web/nzportable.ico
             ./engine/release/web/nzp/game.pk3
             ./engine/release/web/nzp/progs.pk3
+
+  deploy-wasm:
+    # Only auto-deploy on real pushes to master, never on PRs from forks
+    # (which don't have write access to this repo).
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: build-wasm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download WebGL package artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ftewebgl-web-package
+          path: ./deploy
+
+      - name: Deploy to wasm branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: wasm
+          publish_dir: ./deploy
+          force_orphan: true
+          commit_message: "Deploy WASM/WebGL build from ${{ github.sha }}"
+
