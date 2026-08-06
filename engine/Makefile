@@ -2373,7 +2373,12 @@ libs-$(ARCH)/libjpeg.a:
 	test -f libs-$(ARCH)/libjpeg.a || (mkdir -p libs-$(ARCH) && cd libs-$(ARCH) && tar -xvzf ../jpegsrc.v$(JPEGVER).tar.gz && cd jpeg-$(JPEGVER) && $(CONFIGUREOVERRIDES) ./configure $(CONFIGARGS) && $(TOOLOVERRIDES) $(MAKE) && cp .libs/libjpeg.a ../ && $(TOOLOVERRIDES) $(AR) -s ../libjpeg.a && cp jconfig.h jerror.h jmorecfg.h jpeglib.h jversion.h ../ )
 
 libs-$(ARCH)/libz.a libs-$(ARCH)/libz.pc:
-	test -f zlib-$(ZLIBVER).tar.gz || wget http://zlib.net/fossils/zlib-$(ZLIBVER).tar.gz
+	@if [ -f zlib-$(ZLIBVER).tar.gz ] && ! gzip -t zlib-$(ZLIBVER).tar.gz 2>/dev/null; then \
+		echo "zlib-$(ZLIBVER).tar.gz is not a valid gzip file (stale/broken download) -- removing so it gets refetched"; \
+		rm -f zlib-$(ZLIBVER).tar.gz; \
+	fi
+	test -f zlib-$(ZLIBVER).tar.gz || wget https://www.zlib.net/fossils/zlib-$(ZLIBVER).tar.gz
+	@gzip -t zlib-$(ZLIBVER).tar.gz || (echo "ERROR: downloaded zlib-$(ZLIBVER).tar.gz is still not a valid gzip file -- check https://www.zlib.net/fossils/zlib-$(ZLIBVER).tar.gz is reachable" && rm -f zlib-$(ZLIBVER).tar.gz && exit 1)
 	test -f libs-$(ARCH)/libz.a || (mkdir -p libs-$(ARCH) && cd libs-$(ARCH) && tar -xvzf ../zlib-$(ZLIBVER).tar.gz && cd zlib-$(ZLIBVER) && $(TOOLCONFIGUREOVERRIDES) ./configure --static && $(TOOLMAKEOVERRIDES) $(MAKE) libz.a CC="$(CC) $(W32_CFLAGS) -fPIC" && cp libz.a ../ && $(TOOLOVERRIDES) $(AR) -s ../libz.a && cp zlib.h zconf.h zutil.h zlib.pc ../ )
 libs-$(ARCH)/libz9.a: libs-$(ARCH)/libz.a
 	(cd libs-$(ARCH)/zlib-$(ZLIBVER) && \
