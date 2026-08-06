@@ -26,6 +26,7 @@
 		<progress value="0" max="100" id="progress" hidden=1></progress>
 	</div>
 	<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" hidden=1></canvas>
+	<button type="button" onclick="joinSillyServer()" id="joinsilly" hidden=1 style="position:fixed;right:12px;bottom:12px;z-index:10;padding:8px 14px;background:#6e0d00;color:#fff;border:1px solid #a01a00;border-radius:4px;font-family:sans-serif;cursor:pointer;">Join Silly Server</button>
 	<script type='text/javascript'>
 var Module = {
 	files:
@@ -72,9 +73,31 @@ var Module = {
 				alert("Unable to initialise. You may need to restart your browser. If you get this often and inconsistently, consider using a 64bit browser instead.");
 				Module.setStatus("Initialisation Failure");
 			}
+			else
+			{
+				document.getElementById('joinsilly').hidden = false;
+			}
 		}
 	],
 };
+// Sends the exact same command the in-game "Join Silly Server" menu button used to send
+// (m_pop closes/pops the main menu first, then connect joins exactly like any other server),
+// via the engine's real console command bridge -- not a simulated/fake connect.
+function joinSillyServer()
+{
+	const cmd = 'm_pop;connect "wss://cod.sillyprootsoda.com"\n';
+	try
+	{
+		if (typeof FTEC !== 'undefined' && FTEC.cbufadd)
+		{
+			FTEC.cbufadd(cmd);
+			return;
+		}
+	}
+	catch(e){console.log(e);}
+	// Fallback: same path the engine uses for drag/drop "join" links (DOM_LoadFile -> connect).
+	window.postMessage({url:"wss://cod.sillyprootsoda.com", cmd:"joinurl"}, window.location.origin);
+}
 function begin()
 {
 	if (Module.began)

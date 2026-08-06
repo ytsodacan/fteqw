@@ -45,25 +45,12 @@ wget -q "$NZP_GAME_PK3_URL" -O "$PACKAGE_DIR/nzp/game.pk3"
 wget -q "$NZP_QC_ZIP_URL" -O "$TMP_DIR/fte-nzp-qc.zip"
 unzip -q "$TMP_DIR/fte-nzp-qc.zip" -d "$TMP_DIR/qc"
 
-if command -v fteqcc >/dev/null 2>&1; then
-	FTEQCC_BIN="$(command -v fteqcc)"
-elif [ -x "$RELEASE_DIR/fteqcc" ]; then
-	FTEQCC_BIN="$RELEASE_DIR/fteqcc"
-else
-	(
-		cd "$ENGINE_DIR"
-		make qcc-rel -j"$(getconf _NPROCESSORS_ONLN)"
-	)
-	FTEQCC_BIN="$RELEASE_DIR/fteqcc"
-fi
-
-(
-	cd "$ROOT_DIR/quakec/menusys"
-	"$FTEQCC_BIN" -srcfile menu.src >/dev/null
-)
-cp "$ROOT_DIR/quakec/menu.dat" "$TMP_DIR/qc/menu.dat"
-rm -f "$ROOT_DIR/quakec/menu.dat"
-
+# IMPORTANT: fte-nzp-qc.zip already contains the correct, fully-themed NZ:P menu.dat
+# (the actual "MAIN MENU / SOLO / COOPERATIVE / CONFIGURATION / CHARACTER BIOS / CREDITS"
+# screen). Do NOT recompile/overwrite it with the engine's own generic stock
+# quakec/menusys menu -- that's the plain "Join Server / New Game / Demos / Load..."
+# list, and silently replacing the real menu with it is what caused the wrong,
+# unthemed UI to ship in every previous build. Use the zip's files verbatim.
 (
 	cd "$TMP_DIR/qc"
 	zip -q -r "$PACKAGE_DIR/nzp/progs.pk3" csprogs.dat qwprogs.dat menu.dat csprogs.lno
